@@ -489,7 +489,7 @@ footer .wrap { position: relative; z-index: 1; }
     <section id="home">
       <div class="hero">
         <h1 aria-label="MoMy">M<span class="ball out" aria-hidden="true"></span>My</h1>
-        <p class="tag">Ingat semua yang dibahas, biar kamu nggak perlu.</p>
+        <p class="tag">Kamu fokus rapat, MoMy yang nyatet.</p>
         <p class="sub">MoMy = Minutes of Meeting, yours.</p>
       </div>
       <div class="card">
