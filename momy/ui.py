@@ -88,13 +88,19 @@ def check_llm(base_url, api_key, model):
         with urllib.request.urlopen(request, timeout=10) as response:
             ids = [m.get("id") for m in json.load(response).get("data", [])]
     except urllib.error.HTTPError as e:
-        return {"ok": False, "message": "API key ditolak." if e.code in (401, 403) else f"Layanan menjawab error {e.code}."}
+        try:
+            detail = json.loads(e.read()).get("error", {})
+            detail = detail.get("message", "") if isinstance(detail, dict) else str(detail)
+        except ValueError:
+            detail = ""
+        reason = "API key ditolak" if e.code in (401, 403) else f"Layanan menjawab error {e.code}"
+        return {"ok": False, "message": f"{reason}: {detail[:200]}" if detail else reason + "."}
     except (urllib.error.URLError, OSError, ValueError) as e:
         return {"ok": False, "message": f"Tidak bisa terhubung ke {base_url} ({getattr(e, 'reason', e)})."}
-    if ids and model not in ids and f"models/{model}" not in ids:
-        names = [i.removeprefix("models/") for i in ids[:8]]
-        return {"ok": False, "message": f"Terhubung, tapi model “{model}” tidak ada. Tersedia: {', '.join(names)}"}
-    return {"ok": True, "message": "Terhubung. Model siap dipakai."}
+    names = [i.removeprefix("models/") for i in ids if i]
+    if names and model not in names:
+        return {"ok": False, "models": names, "message": f"Terhubung, tapi model “{model}” tidak ada. Pilih dari daftar di kolom Nama model."}
+    return {"ok": True, "models": names, "message": "Terhubung. Model siap dipakai."}
 
 
 def meeting_name(path):
@@ -244,7 +250,14 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(400, {"error": "Isi alamat API (http:// atau https://) dan nama model."})
             if url.path == "/api/config/test":
                 return self.reply(200, check_llm(base_url, api_key, model))
-            cli.save_settings({"base_url": base_url, "model": model, "api_key": "" if body.get("clear_key") else api_key})
+            try:
+                saved = json.loads(cli.CONFIG.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                saved = {}
+            values = {"base_url": base_url, "model": model, "api_key": "" if body.get("clear_key") else api_key}
+            for key in config_view()["locked"]:
+                values[key] = saved.get(key, "")
+            cli.save_settings(values)
             return self.reply(200, config_view())
         with lock:
             if status.get("running"):
@@ -472,13 +485,13 @@ footer .wrap { position: relative; z-index: 1; }
     <form id="setForm">
       <h2 id="setTitle">Pengaturan AI</h2>
       <p class="muted">Suara dan transkrip selalu diproses di laptop ini. Di sini kamu pilih model AI yang menulis notulennya: gratis dan privat lewat <b>Ollama</b> di laptop ini, atau layanan online yang punya API mirip OpenAI.</p>
-      <div class="actions" style="margin-bottom: 0">
+      <div class="actions" id="presets" style="margin-bottom: 0">
         <button type="button" class="btn" id="presetLocal">Pakai Ollama di laptop ini</button>
         <button type="button" class="btn" id="presetGemini">Pakai Gemini (gratis)</button>
       </div>
       <p class="muted" id="geminiHelp" hidden>Ambil API key gratis di <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> (login akun Google, tanpa kartu kredit), lalu tempel di kolom API key. Di paket gratis, Google boleh memakai teks yang dikirim untuk memperbaiki layanannya, jadi untuk rapat rahasia lebih aman pakai Ollama.</p>
       <div class="field"><label for="setUrl">Alamat API</label><input id="setUrl" type="url" required autocomplete="off"><small>Ollama: http://localhost:11434/v1</small></div>
-      <div class="field"><label for="setModel">Nama model</label><input id="setModel" required maxlength="100" autocomplete="off"><small>Contoh untuk Ollama: gemma3:4b</small></div>
+      <div class="field"><label for="setModel">Nama model</label><input id="setModel" required maxlength="100" autocomplete="off" list="modelList"><datalist id="modelList"></datalist><small id="modelHint">Contoh untuk Ollama: gemma3:4b. Klik Tes koneksi untuk melihat daftar model.</small></div>
       <div class="field"><label for="setKey">API key</label><input id="setKey" type="password" autocomplete="off"><small id="keyHint">Kosongkan untuk Ollama.</small></div>
       <p id="setMsg" role="status" class="muted"></p>
       <div class="actions"><button type="submit" class="btn primary">Simpan</button><button type="button" class="btn" id="setTest">Tes koneksi</button><button type="button" class="btn" id="setClose">Tutup</button></div>
@@ -896,7 +909,9 @@ $("openSettings").onclick = async () => {
   $("keyHint").textContent = config && config.has_key ? "Sudah tersimpan. Kosongkan untuk tetap memakai yang lama." : "Kosongkan untuk Ollama.";
   const locked = config ? config.locked : [];
   $("setUrl").disabled = locked.includes("base_url"); $("setModel").disabled = locked.includes("model"); $("setKey").disabled = locked.includes("api_key");
-  setMsg(locked.length ? "Sebagian pengaturan diatur lewat environment (MOMY_...), jadi tidak bisa diubah di sini." : "");
+  $("presets").hidden = locked.includes("base_url"); $("geminiHelp").hidden = true;
+  const names = { base_url: "Alamat", model: "Model", api_key: "API key" };
+  setMsg(locked.length ? `${locked.map(k => names[k]).join(" dan ")} diatur oleh launcher, jadi terkunci.${locked.includes("model") ? "" : " Model tetap bisa dipilih di sini."}` : "");
   $("settings").showModal();
 };
 $("setClose").onclick = () => $("settings").close();
@@ -907,7 +922,14 @@ $("presetGemini").onclick = () => {
 };
 $("setTest").onclick = async () => {
   setMsg("Mengetes…");
-  try { const r = await api("/api/config/test", { method: "POST", body: settingsBody() }); setMsg(r.message, r.ok ? "ok" : "bad"); }
+  try {
+    const r = await api("/api/config/test", { method: "POST", body: settingsBody() });
+    setMsg(r.message, r.ok ? "ok" : "bad");
+    if (r.models && r.models.length) {
+      $("modelList").innerHTML = r.models.map(m => `<option value="${esc(m)}"></option>`).join("");
+      $("modelHint").textContent = `${r.models.length} model tersedia: klik kolom Nama model untuk memilih.`;
+    }
+  }
   catch (e) { setMsg(e.message, "bad"); }
 };
 $("setForm").onsubmit = async e => {

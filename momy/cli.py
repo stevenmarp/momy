@@ -229,6 +229,7 @@ def chat(prompt, model, base_url, api_key, max_tokens=1500):
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.2,
         "max_tokens": max_tokens,
+        "stream": False,
     }
     request = urllib.request.Request(
         base_url.rstrip("/") + "/chat/completions",
