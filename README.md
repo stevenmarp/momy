@@ -4,9 +4,8 @@
 and the minutes: summary, decisions, action items (who, what, deadline) and open topics.
 Everything that touches your audio runs on your own laptop.
 
-Website: **https://momy.stevenmarp.xyz** · Try the real app in the browser, on a meeting that was
-already processed: **https://momy.stevenmarp.xyz/demo/** · The app and the minutes are in
-Indonesian; the transcription works for any language Whisper knows.
+Website: **https://momy.stevenmarp.xyz** · The app and the minutes are in Indonesian; the
+transcription works for any language Whisper knows.
 
 ![MoMy minutes of a recorded kickoff meeting](docs/img/notulen.webp)
 
@@ -132,9 +131,6 @@ ollama show --modelfile gemma3:4b | awk '/^FROM/ && seen++ {next} 1' > Modelfile
 ollama create gemma3-text:4b -f Modelfile
 OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 ollama serve
 ```
-
-The demo page is the real `momy/ui.py` page with its API answered in the browser; rebuild it
-with `python docs/make_demo.py` after changing the app.
 
 ## Tests
 
