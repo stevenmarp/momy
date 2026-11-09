@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoMy · Minutes of Meeting, yours</title>
+<meta name="description" content="Rekaman rapat jadi transkrip per pembicara dan notulen lengkap, di laptopmu sendiri. Gratis dan open source.">
+<meta property="og:title" content="MoMy · Minutes of Meeting, yours">
+<meta property="og:description" content="Ingat semua yang dibahas, biar kamu nggak perlu. Rekaman rapat jadi notulen di laptopmu sendiri.">
+<meta property="og:image" content="https://momy.stevenmarp.xyz/img/notulen.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23FF6B6B' stroke='%23fff6d6' stroke-width='2.5'/%3E%3Ccircle cx='11' cy='11' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+@font-face { font-family: "Bricolage"; src: url(BricolageGrotesque.woff2) format("woff2"); font-weight: 400 800; font-display: swap; }
+:root {
+  color-scheme: dark;
+  --sun: #141414; --ink: #fff6d6; --paper: #1f1e1b; --cream: #2b2924; --muted: #c9c1aa; --chip-fg: #141414;
+  --coral: #ff6b6b; --teal: #1fb5a5; --orange: #ffa62b; --violet: #7b68ee; --pink: #ff8fc7; --green: #5cc98a;
+  --line: 2px solid var(--ink); --display: "Bricolage", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--sun); scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); background: var(--sun); font: 17px/1.6 system-ui, "Ubuntu", "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; line-height: 1.1; }
+p { margin: 0 0 16px; }
+a { color: var(--ink); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.muted { color: var(--muted); }
+.ball { --c: var(--coral); display: inline-block; width: 1em; height: 1em; border-radius: 50%; flex: none; box-shadow: 0 0 0 2px var(--ink);
+  background: radial-gradient(circle at 30% 28%, #fff 0 13%, transparent 14%),
+              radial-gradient(circle at 38% 34%, var(--c) 0 58%, color-mix(in srgb, var(--c) 78%, #000) 100%); }
+.btn { font: 700 16px/1 system-ui, sans-serif; min-height: 50px; padding: 0 24px; border-radius: 999px; border: var(--line); background: var(--paper);
+  color: var(--ink); display: inline-flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; transition: transform .15s ease, background-color .15s ease; }
+.btn:hover { background: var(--cream); }
+.btn.primary { background: var(--ink); color: var(--chip-fg); }
+.btn.primary:hover { transform: translateY(-2px); background: var(--ink); }
+svg.i { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 24px; flex-wrap: wrap; }
+.mark { font: 800 32px/1 var(--display); letter-spacing: -0.05em; text-decoration: none; display: inline-flex; align-items: baseline; }
+.mark .ball { width: .54em; height: .54em; margin: 0 .03em; }
+nav { display: flex; gap: 6px; flex-wrap: wrap; }
+nav a { font-weight: 700; text-decoration: none; padding: 10px 14px; border-radius: 999px; min-height: 44px; display: inline-flex; align-items: center; }
+nav a:hover { background: var(--cream); }
+
+.hero { padding-top: 72px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(84px, 20vw, 220px); font-weight: 800; line-height: .82; letter-spacing: -0.06em; margin: 0; display: flex; align-items: baseline; }
+.hero h1 .ball { width: .55em; height: .55em; margin: 0 .035em; }
+.hero .tag { font: 800 clamp(26px, 4vw, 44px)/1.12 var(--display); letter-spacing: -0.03em; max-width: 20ch; margin: 32px 0 16px; }
+.hero .lead { font-size: 1.15rem; max-width: 52ch; color: var(--muted); }
+.cta { display: flex; gap: 12px; flex-wrap: wrap; margin: 28px 0 12px; }
+.small { font-size: .92rem; color: var(--muted); font-weight: 600; }
+
+.shot { margin: 32px 0 0; border: var(--line); border-radius: 24px; overflow: hidden; background: var(--paper); }
+.shot img { display: block; width: 100%; height: auto; }
+figcaption { padding: 12px 18px; font-size: .92rem; color: var(--muted); border-top: var(--line); }
+
+section.wrap { margin-top: 96px; }
+section h2 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 800; letter-spacing: -0.04em; margin: 0 0 12px; }
+.intro { color: var(--muted); max-width: 60ch; margin-bottom: 32px; }
+
+.steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.steps li { border: var(--line); border-radius: 24px; padding: 28px; background: var(--paper); }
+.steps .ball { font-size: 42px; margin-bottom: 18px; }
+.steps h3 { font-size: 24px; margin: 0 0 8px; }
+.steps p { margin: 0; color: var(--muted); }
+
+.why { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+.why ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 26px; }
+.why li { display: grid; grid-template-columns: 30px 1fr; gap: 16px; }
+.why li .ball { font-size: 30px; margin-top: 4px; }
+.why h3 { font-size: 22px; margin: 0 0 4px; }
+.why p { margin: 0; color: var(--muted); }
+
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
+.pair .shot { margin: 0; }
+
+.install { border: var(--line); border-radius: 28px; padding: 36px; background: var(--paper); }
+.install h3 { font-size: 22px; margin: 28px 0 10px; }
+.install h3:first-of-type { margin-top: 0; }
+.cmd { display: flex; align-items: center; gap: 12px; border: var(--line); border-radius: 16px; padding: 10px 10px 10px 18px; background: var(--sun); flex-wrap: wrap; }
+.cmd code { flex: 1 1 260px; font: 600 15px/1.5 ui-monospace, "Ubuntu Mono", monospace; overflow-wrap: anywhere; background: none; padding: 0; }
+.cmd .btn { min-height: 44px; padding: 0 16px; font-size: 14px; }
+.install ol { padding-left: 1.2em; margin: 0; }
+.install li { margin-bottom: 8px; }
+.install code { font: 600 .92em ui-monospace, "Ubuntu Mono", monospace; background: var(--cream); padding: 1px 6px; border-radius: 6px; }
+.note { border-left: 4px solid var(--orange); padding: 4px 0 4px 16px; margin-top: 24px; color: var(--muted); }
+
+.numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.numbers div { border: var(--line); border-radius: 24px; padding: 24px; background: var(--paper); }
+.numbers b { display: block; font: 800 40px/1 var(--display); letter-spacing: -0.03em; margin-bottom: 10px; }
+.numbers p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+details { border-bottom: 2px dashed color-mix(in srgb, var(--ink) 25%, transparent); padding: 18px 0; }
+summary { font: 800 22px/1.3 var(--display); cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font-size: 28px; line-height: 1; }
+details[open] summary::after { content: "–"; }
+details p { margin: 12px 0 0; color: var(--muted); max-width: 70ch; }
+
+footer { position: relative; margin-top: 96px; padding: 64px 0 340px; overflow: hidden; }
+footer .wrap { position: relative; z-index: 1; }
+footer .big { font: 800 clamp(36px, 6.4vw, 64px)/1 var(--display); letter-spacing: -0.04em; margin: 0 0 16px; max-width: 15ch; }
+footer .about { max-width: 58ch; font-size: 1.05rem; }
+footer .links { display: flex; gap: 18px; flex-wrap: wrap; font-weight: 700; margin: 20px 0; }
+footer .credit { font-size: .85rem; color: var(--muted); max-width: 70ch; }
+footer .copy { font-weight: 800; margin-top: 18px; }
+.pile { position: absolute; left: 0; bottom: 0; width: 100%; height: 600px; pointer-events: none; z-index: 0; }
+
+@media (max-width: 860px) {
+  .steps, .numbers, .why, .pair { grid-template-columns: 1fr; }
+  .install { padding: 24px 20px; }
+  footer { padding-bottom: 240px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="mark" href="#" aria-label="MoMy">M<span class="ball" aria-hidden="true"></span>My</a>
+  <nav aria-label="Navigasi">
+    <a href="#cara">Cara kerja</a>
+    <a href="#install">Install</a>
+    <a href="https://github.com/stevenmarp/momy">GitHub</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <h1 aria-label="MoMy">M<span class="ball" aria-hidden="true"></span>My</h1>
+    <p class="tag">Ingat semua yang dibahas, biar kamu nggak perlu.</p>
+    <p class="lead">Rekaman rapat jadi transkrip per pembicara dan notulen lengkap: ringkasan, keputusan, siapa mengerjakan apa. Di laptopmu sendiri, gratis, open source.</p>
+    <div class="cta">
+      <a class="btn primary" href="#install"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Install gratis</a>
+      <a class="btn" href="https://github.com/stevenmarp/momy">Lihat kode di GitHub</a>
+    </div>
+    <p class="small">MoMy = Minutes of Meeting, yours.</p>
+    <figure class="shot">
+      <img src="img/notulen.webp" width="1280" height="900" alt="Notulen hasil MoMy: ringkasan, keputusan, dan tabel action items dari rekaman rapat">
+      <figcaption>Notulen asli buatan MoMy dari rekaman rapat kickoff berbahasa Inggris, ditulis dalam Bahasa Indonesia.</figcaption>
+    </figure>
+  </div>
+
+  <section id="cara" class="wrap">
+    <h2>Dari rekaman ke notulen, tanpa ngetik</h2>
+    <p class="intro">Tiga langkah. Yang kamu lakukan cuma langkah pertama.</p>
+    <ol class="steps">
+      <li><span class="ball" style="--c:var(--coral)" aria-hidden="true"></span><h3>1. Tarik rekamannya</h3><p>File dari Zoom, Google Meet, atau rekaman HP: mp4, m4a, mp3, wav, webm.</p></li>
+      <li><span class="ball" style="--c:var(--teal)" aria-hidden="true"></span><h3>2. MoMy mendengarkan</h3><p>Memisahkan siapa bicara kapan, lalu menulis transkrip lengkap dengan jamnya. Bahasa Indonesia campur English aman.</p></li>
+      <li><span class="ball" style="--c:var(--orange)" aria-hidden="true"></span><h3>3. Notulen jadi</h3><p>Ringkasan, keputusan, action items (siapa, apa, deadline), dan topik yang belum selesai. Tinggal salin ke WhatsApp atau email.</p></li>
+    </ol>
+  </section>
+
+  <section class="wrap">
+    <div class="why">
+      <div>
+        <h2>Kenapa MoMy</h2>
+        <p class="intro">Notulen rapat yang punya kamu sendiri.</p>
+      </div>
+      <ul>
+        <li><span class="ball" style="--c:var(--coral)" aria-hidden="true"></span><div><h3>Tiap orang satu warna</h3><p>Pembicara dipisah otomatis. Ganti “Speaker 3” dengan nama aslinya, notulennya ditulis ulang dalam sekitar 30 detik.</p></div></li>
+        <li><span class="ball" style="--c:var(--teal)" aria-hidden="true"></span><div><h3>Rekamanmu nggak ke mana-mana</h3><p>Suara dan pembicara diproses di laptop. Pakai Ollama dan semuanya offline. Pakai AI online, yang dikirim cuma teks transkripnya, dan aplikasi menulis jelas ke mana.</p></div></li>
+        <li><span class="ball" style="--c:var(--orange)" aria-hidden="true"></span><div><h3>AI pilihanmu</h3><p>Model gratis di laptop lewat Ollama, atau layanan apa pun yang punya API mirip OpenAI. Diatur dari tombol Pengaturan AI.</p></div></li>
+        <li><span class="ball" style="--c:var(--violet)" aria-hidden="true"></span><div><h3>Open source, lisensi MIT</h3><p>Kodenya terbuka. Boleh dipakai, diubah, dan dibagikan, untuk pribadi maupun kantor.</p></div></li>
+      </ul>
+    </div>
+    <div class="pair">
+      <figure class="shot"><img src="img/pembicara.webp" width="1280" height="900" loading="lazy" alt="Tab Nama pembicara: tiap pembicara dengan warnanya, persentase bicara, kutipan, dan kolom nama"><figcaption>Kenali pembicara dari kutipannya, lalu beri nama.</figcaption></figure>
+      <figure class="shot"><img src="img/proses.webp" width="1280" height="900" loading="lazy" alt="Layar proses: empat langkah dengan progress bar dan perkiraan sisa waktu"><figcaption>Empat langkah, dengan perkiraan sisa waktu.</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="install" class="wrap">
+    <h2>Pasang MoMy</h2>
+    <p class="intro">Butuh laptop dengan RAM 8 GB dan ruang kosong sekitar 3 GB untuk model, yang diunduh sekali saat pertama dipakai. Tanpa kartu grafis pun jalan.</p>
+    <div class="install">
+      <h3>Linux dan macOS</h3>
+      <div class="cmd"><code id="cmd">curl -fsSL https://momy.stevenmarp.xyz/install.sh | sh</code><button class="btn" type="button" id="copyCmd">Salin</button></div>
+      <p class="muted" style="margin-top: 12px">Lalu buka <b>MoMy</b> dari menu aplikasi, atau ketik <code>momy-ui</code>.</p>
+
+      <h3>Model AI untuk menulis notulen</h3>
+      <ol>
+        <li>Gratis dan offline: pasang <a href="https://ollama.com">Ollama</a>, lalu jalankan <code>ollama pull gemma3:4b</code>. Paling privat, tapi butuh laptop yang cukup kuat.</li>
+        <li>Gratis tanpa pasang apa-apa: ambil API key di <a href="https://aistudio.google.com/apikey">Google AI Studio</a>, lalu klik <b>Pakai Gemini (gratis)</b> di Pengaturan AI. Notulen jadi dalam hitungan detik; teks transkripnya dikirim ke Google.</li>
+        <li>Atau layanan AI lain yang punya API mirip OpenAI: isi alamat API, nama model, dan API key di <b>Pengaturan AI</b>.</li>
+      </ol>
+
+      <h3>Windows</h3>
+      <p class="muted">Belum diuji. Kalau mau mencoba: pasang <a href="https://docs.astral.sh/uv/">uv</a>, lalu jalankan <code>uv tool install git+https://github.com/stevenmarp/momy</code> dan <code>momy-ui</code>. Kabari hasilnya lewat GitHub.</p>
+
+      <p class="note">MoMy diuji di Linux (Ubuntu). macOS seharusnya jalan dengan installer yang sama, tapi belum dicoba di Mac sungguhan.</p>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2>Seberapa cepat dan akurat</h2>
+    <p class="intro">Diukur di laptop 15 watt tanpa kartu grafis (Intel i3-1215U, RAM 8 GB). Laptop yang lebih kencang, lebih cepat.</p>
+    <div class="numbers">
+      <div><b>±0,6×</b><p>durasi rapat untuk memisahkan pembicara dan menulis transkrip. Rapat 10 menit selesai sekitar 5,5 menit, rapat 69 menit sekitar 46 menit.</p></div>
+      <div><b>32 detik</b><p>untuk menulis notulen rapat 69 menit dengan model AI online. Dengan model gratis di laptop yang sama: sekitar 6 menit per 10 menit rapat.</p></div>
+      <div><b>22–24%</b><p>error pemisahan pembicara pada rapat uji AMI ES2004a. Sebagai pembanding, pyannote 3.1 mencatat 18,8% di seluruh set uji AMI.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2>Pertanyaan</h2>
+    <details><summary>Butuh internet?</summary><p>Sekali, untuk mengunduh model saat pertama dipakai. Setelah itu, dengan Ollama, MoMy jalan tanpa internet sama sekali.</p></details>
+    <details><summary>Gratis?</summary><p>Ya, dan open source dengan lisensi MIT. Model AI-nya juga bisa gratis: Ollama di laptop, atau Gemini lewat API key gratis dari Google. Kalau memilih layanan berbayar, biayanya dibayar ke layanan itu, bukan ke MoMy.</p></details>
+    <details><summary>Rapat bahasa apa saja?</summary><p>Dirancang untuk Bahasa Indonesia yang campur English. Rapat berbahasa lain juga bisa ditranskrip; notulennya tetap ditulis dalam Bahasa Indonesia.</p></details>
+    <details><summary>Siapa yang bisa melihat rekamanku?</summary><p>Cuma kamu. Rekaman disimpan di folder MoMy di laptopmu dan tidak pernah diunggah. Aplikasinya hanya bisa dibuka dari laptop itu sendiri.</p></details>
+    <details><summary>Kenapa hasil pemisahan pembicaranya kadang meleset?</summary><p>Suara yang tumpang tindih atau mikrofon yang jelek bikin dua orang terdengar mirip. Isi jumlah orang saat mengunggah, atau beri nama yang sama ke dua label supaya digabung.</p></details>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="big">Minutes of Meeting, yours.</p>
+    <p class="about">Notulen rapat yang punya kamu sendiri: rekamannya nggak keluar dari laptop, dan semua yang dibahas dia ingetin. Bonusnya, “MoMy” kebaca kayak <i>mommy</i>, sosok yang inget semua omongan kamu.</p>
+    <p class="links"><a href="https://github.com/stevenmarp/momy">GitHub</a><a href="https://github.com/stevenmarp/momy/blob/main/LICENSE">Lisensi MIT</a><a href="#install">Install</a></p>
+    <p class="credit">Font Bricolage Grotesque, SIL Open Font License. Contoh rapat di screenshot: AMI Meeting Corpus ES2004a, CC BY 4.0.</p>
+    <p class="copy">© <span id="year">2026</span> Stevenmarp</p>
+  </div>
+  <canvas class="pile" id="pile" aria-hidden="true"></canvas>
+</footer>
+<script>
+const $ = id => document.getElementById(id);
+$("year").textContent = new Date().getFullYear();
+$("copyCmd").onclick = async () => {
+  await navigator.clipboard.writeText($("cmd").textContent);
+  $("copyCmd").textContent = "Tersalin";
+  setTimeout(() => $("copyCmd").textContent = "Salin", 2000);
+};
+/* footer pile: a small physics toy. Balls fall in when the footer comes into view, the cursor
+   knocks them around, scrolling jiggles them. The loop only runs while the footer is visible
+   and something still moves, so an idle page costs no CPU. */
+function pile() {
+  const cv = $("pile"), ctx = cv.getContext("2d");
+  const COLORS = ["#ff6b6b", "#1fb5a5", "#ffa62b", "#7b68ee", "#141414", "#ffffff", "#ff8fc7"];
+  const still = matchMedia("(prefers-reduced-motion: reduce)");
+  const cursor = { x: -999, y: -999, vx: 0, vy: 0, r: 46, t: 0 };
+  let W = 0, H = 0, dpr = 1, balls = [], ink = "#141414", sun = "#ffd23f";
+  let raf = 0, last = 0, calm = 0, visible = false, lastScroll = scrollY, seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+  function theme() {
+    const cs = getComputedStyle(document.documentElement);
+    ink = cs.getPropertyValue("--ink").trim(); sun = cs.getPropertyValue("--sun").trim();
+  }
+  function resize() {
+    const box = cv.getBoundingClientRect();
+    dpr = devicePixelRatio || 1; W = box.width; H = box.height;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  }
+  function spawn() {
+    seed = 7;
+    const spread = Math.min(W, 1000);
+    balls = Array.from({ length: Math.round(Math.min(W, 900) / (W < 640 ? 15 : 12)) }, (_, i) => {
+      const r = (W < 640 ? 9 : 11) + rnd() * (W < 640 ? 22 : 30);
+      return { r, m: r * r, x: r + Math.pow(rnd(), 1.8) * (spread - 2 * r), y: -r - i * 16 - rnd() * 60,
+               vx: 0, vy: 0, c: COLORS[Math.floor(rnd() * COLORS.length)], ring: rnd() < .22 };
+    });
+  }
+  function step(dt) {
+    // Position-based: move, push overlaps apart, then derive velocity from what really moved.
+    // A ball held up by others ends with zero velocity, so the pile can come to a full stop.
+    for (const b of balls) { b.ox = b.x; b.oy = b.y; b.vy += 1700 * dt; b.x += b.vx * dt; b.y += b.vy * dt; }
+    for (let it = 0; it < 4; it++) {
+      for (let i = 0; i < balls.length; i++) {
+        const a = balls[i];
+        for (let j = i + 1; j < balls.length; j++) {
+          const b = balls[j], dx = b.x - a.x, dy = b.y - a.y, d = a.r + b.r, d2 = dx * dx + dy * dy;
+          if (d2 >= d * d || d2 === 0) continue;
+          const dist = Math.sqrt(d2), nx = dx / dist, ny = dy / dist, ia = 1 / a.m, ib = 1 / b.m;
+          const push = (d - dist) / (ia + ib);
+          a.x -= nx * push * ia; a.y -= ny * push * ia; b.x += nx * push * ib; b.y += ny * push * ib;
+        }
+        const cx = a.x - cursor.x, cy = a.y - cursor.y, cd = a.r + cursor.r, c2 = cx * cx + cy * cy;
+        if (c2 < cd * cd && c2 > 0) { const dist = Math.sqrt(c2); a.x += cx / dist * (cd - dist); a.y += cy / dist * (cd - dist); }
+        a.y = Math.min(a.y, H - a.r); a.x = Math.min(Math.max(a.x, a.r), W - a.r);
+        if (a.inside) a.y = Math.max(a.y, a.r); else if (a.y > a.r) a.inside = true;
+      }
+    }
+    for (const b of balls) {
+      let vx = (b.x - b.ox) / dt, vy = (b.y - b.oy) / dt;
+      if (b.y >= H - b.r - .5) vx *= .9;
+      const speed = Math.hypot(vx, vy), cap = speed > 2600 ? 2600 / speed : .998;
+      b.vx = speed < 6 ? 0 : vx * cap; b.vy = speed < 6 ? 0 : vy * cap;
+    }
+  }
+  function draw() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    ctx.lineWidth = 2.5; ctx.strokeStyle = ink;
+    for (const b of balls) {
+      if (b.y + b.r < 0) continue;
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r - 1, 0, 7); ctx.fillStyle = b.c; ctx.fill(); ctx.stroke();
+      if (b.ring) { ctx.beginPath(); ctx.arc(b.x, b.y, b.r * .48, 0, 7); ctx.fillStyle = sun; ctx.fill(); ctx.stroke(); }
+      else if (b.c !== "#ffffff") { ctx.beginPath(); ctx.arc(b.x - b.r * .36, b.y - b.r * .38, b.r * .17, 0, 7); ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.fill(); }
+    }
+  }
+  function frame(t) {
+    const dt = last ? Math.min(.033, (t - last) / 1000) : 1 / 60; last = t;
+    step(dt / 2); step(dt / 2); draw();
+    let moved = 0;
+    for (const b of balls) { moved = Math.max(moved, Math.abs(b.x - (b.px ?? b.x)) + Math.abs(b.y - (b.py ?? b.y))); b.px = b.x; b.py = b.y; }
+    const moving = moved > .5 || performance.now() - cursor.t < 250;
+    calm = moving ? 0 : calm + 1;
+    if (visible && calm < 45) raf = requestAnimationFrame(frame);
+    else { raf = 0; last = 0; }
+  }
+  function wake() { if (!raf && visible && !still.matches) { calm = 0; raf = requestAnimationFrame(frame); } }
+  function settle() { for (let i = 0; i < 1500; i++) step(1 / 120); for (const b of balls) b.vx = b.vy = 0; draw(); }
+
+  addEventListener("pointermove", e => {
+    const box = cv.getBoundingClientRect(), x = e.clientX - box.left, y = e.clientY - box.top, now = performance.now();
+    if (x < -80 || y < -80 || x > W + 80 || y > H + 80) { cursor.x = cursor.y = -999; return; }
+    const dt = Math.max(16, now - cursor.t) / 1000;
+    if (cursor.x > -999) { cursor.vx = (x - cursor.x) / dt; cursor.vy = (y - cursor.y) / dt; }
+    cursor.x = x; cursor.y = y; cursor.t = now; wake();
+  }, { passive: true });
+  addEventListener("scroll", () => {
+    const d = Math.abs(scrollY - lastScroll); lastScroll = scrollY;
+    if (!visible || still.matches || !d) return;
+    for (const b of balls) if (b.y > H - b.r * 3) b.vy -= Math.min(260, d * 6) * (.4 + rnd() * .8);
+    wake();
+  }, { passive: true });
+  addEventListener("resize", () => { resize(); spawn(); still.matches ? settle() : wake(); });
+  new IntersectionObserver(([entry]) => {
+    const was = visible; visible = entry.isIntersecting;
+    if (visible && !was && !still.matches) { spawn(); wake(); }
+  }, { threshold: .05 }).observe(cv);
+
+  theme(); resize(); spawn();
+  if (still.matches) settle();
+}
+pile();
+</script>
+</body>
+</html>

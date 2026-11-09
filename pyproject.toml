@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "momy"
+version = "0.1.0"
+description = "MoMy, Minutes of Meeting, yours: a meeting recording becomes a transcript with speakers and minutes, on your own laptop."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "momy/OFL-BricolageGrotesque.txt"]
+requires-python = ">=3.9"
+dependencies = [
+    "faster-whisper>=1.1",
+    "sherpa-onnx>=1.12",
+    # av 19 dropped open(metadata_errors=...), which faster-whisper 1.2.1 still passes.
+    "av<19",
+]
+keywords = ["meeting", "minutes", "transcription", "diarization", "whisper", "ollama", "indonesian"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+
+[project.urls]
+Homepage = "https://stevenmarp.github.io/momy/"
+Source = "https://github.com/stevenmarp/momy"
+
+[project.scripts]
+momy = "momy.cli:main"
+momy-ui = "momy.ui:main"
+
+[tool.setuptools]
+packages = ["momy"]
+
+[tool.setuptools.package-data]
+momy = ["BricolageGrotesque.woff2", "OFL-BricolageGrotesque.txt"]
