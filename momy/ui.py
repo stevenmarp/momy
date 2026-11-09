@@ -884,9 +884,9 @@ let config = null;
 async function loadConfig() {
   config = await api("/api/config").catch(() => null);
   if (!config) return;
-  $("privacy").textContent = config.ollama
+  $("privacy").textContent = config.note || (config.ollama
     ? `Suara, pembicara, dan notulen semuanya diproses di laptop ini (${config.model} lewat Ollama).`
-    : `Suara dan pembicara diproses di laptop ini. Notulen ditulis ${config.model} lewat ${config.host}: teks transkripnya dikirim ke sana.`;
+    : `Suara dan pembicara diproses di laptop ini. Notulen ditulis ${config.model} lewat ${config.host}: teks transkripnya dikirim ke sana.`);
 }
 function setMsg(text, kind = "") { $("setMsg").textContent = text; $("setMsg").className = kind || "muted"; }
 function settingsBody() { return JSON.stringify({ base_url: $("setUrl").value.trim(), model: $("setModel").value.trim(), api_key: $("setKey").value.trim() }); }
