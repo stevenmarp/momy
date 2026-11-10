@@ -1,7 +1,8 @@
 # MoMy
 
 **Minutes of Meeting, yours.** Drop in a meeting recording, get a transcript split by speaker
-and the minutes: summary, decisions, action items (who, what, deadline) and open topics.
+and the minutes: summary, decisions, action items (who, what, deadline), the discussion grouped
+by topic, and open topics.
 Everything that touches your audio runs on your own laptop.
 
 Website: **https://momy.stevenmarp.xyz** · The app and the minutes are in Indonesian; the
@@ -131,6 +132,19 @@ ollama show --modelfile gemma3:4b | awk '/^FROM/ && seen++ {next} 1' > Modelfile
 ollama create gemma3-text:4b -f Modelfile
 OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 ollama serve
 ```
+
+## Roadmap
+
+Planned next, several of them inspired by [OpenWhispr](https://github.com/OpenWhispr/openwhispr) (MIT):
+
+- record a meeting live (Zoom, Teams, Google Meet) instead of importing a file afterwards
+- voice fingerprints, so the same person keeps their name across meetings
+- search across every meeting
+- GPU acceleration (Vulkan for Intel and AMD, CUDA, Metal)
+- tested Windows and macOS installers
+- a dictation hotkey
+
+Ideas and pull requests are welcome.
 
 ## Tests
 

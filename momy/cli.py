@@ -11,6 +11,7 @@ from collections import Counter
 from pathlib import Path
 
 __version__ = "0.1.0"
+TOKENS = Counter()
 
 SAMPLE_RATE = 16000
 CACHE = Path(os.environ.get("MOMY_CACHE") or Path.home() / ".cache" / "momy")
@@ -32,33 +33,39 @@ Tulis catatan ringkas dalam Bahasa Indonesia, hanya berdasarkan isi potongan ini
 - Keputusan yang diambil
 - Tugas: siapa, apa, deadline (kalau disebut)
 - Pertanyaan/topik yang belum selesai
-Kalau nama asli pembicara disebut jelas, tulis "Nama (Speaker N)". Jangan mengarang.
+Kelompokkan per topik. Kalau nama asli pembicara jelas, tulis namanya. Jangan mengarang.
 
 Potongan transkrip:
 {text}"""
 
 SUMMARY_PROMPT = """Kamu notulis rapat profesional. Di bawah ini {source} rapat (Bahasa Indonesia, kadang campur English).
-Pembicara diberi label "Speaker N".
+Pembicara diberi label "Speaker N", atau sudah memakai nama asli.
 
-Tulis notulen dalam Bahasa Indonesia, format Markdown persis seperti ini:
+Tulis notulen dalam Bahasa Indonesia yang rapi dan mudah dipindai. Ikuti format Markdown ini persis, tanpa kalimat pembuka atau penutup:
 
 ## Ringkasan
-(maksimal 7 bullet, poin terpenting)
+(2-3 kalimat dalam satu paragraf: rapat ini membahas apa dan apa hasil utamanya.)
 
 ## Keputusan
-(bullet; tulis "- Tidak ada keputusan eksplisit." kalau tidak ada)
+- (satu keputusan per baris; tulis "- Belum ada keputusan." kalau tidak ada)
 
 ## Action Items
 | Siapa | Apa | Deadline |
 |---|---|---|
-(satu baris per tugas; "-" kalau deadline tidak disebut)
+(satu baris per tugas, mulai kolom Apa dengan kata kerja; "-" kalau deadline tidak disebut; kalau tidak ada tugas, satu baris "| - | Tidak ada tugas yang disebut | - |")
+
+## Pembahasan
+### (judul topik, 2-5 kata)
+- (poin penting, maksimal 4 per topik, masing-masing satu kalimat)
+(ulangi per topik sesuai urutan rapat, maksimal 6 topik)
 
 ## Topik Belum Selesai
-(bullet; tulis "- Tidak ada." kalau tidak ada)
+- (pertanyaan atau hal yang masih menggantung; "- Tidak ada." kalau tidak ada)
 
 Aturan:
-- Hanya pakai informasi yang ada di teks. Jangan mengarang nama, tanggal, atau angka.
-- Kalau nama asli pembicara disebut jelas, tulis "Nama (Speaker N)"; kalau tidak, pakai "Speaker N".
+- Hanya pakai informasi yang ada di teks. Jangan mengarang nama, tanggal, angka, atau tugas.
+- Kalau nama asli seorang pembicara jelas dari percakapan, tulis namanya saja; kalau tidak, tulis labelnya ("Speaker 2").
+- Kalimat pendek dan langsung. **Tebalkan** angka, tanggal, tenggat, dan nama dokumen atau produk yang penting.
 - Istilah English yang dipakai peserta boleh dipertahankan.
 
 {text}"""
@@ -239,7 +246,11 @@ def chat(prompt, model, base_url, api_key, max_tokens=1500):
     for attempt in range(1, 4):
         try:
             with urllib.request.urlopen(request, timeout=3600) as response:
-                content = json.load(response)["choices"][0]["message"]["content"] or ""
+                answer = json.load(response)
+            usage = answer.get("usage") or {}
+            TOKENS["in"] += usage.get("prompt_tokens") or 0
+            TOKENS["out"] += usage.get("completion_tokens") or 0
+            content = answer["choices"][0]["message"]["content"] or ""
             return re.sub(r"<think>.*?</think>", "", content, flags=re.S).strip()
         except urllib.error.HTTPError as e:
             error = f"LLM error {e.code}: {e.read().decode(errors='replace')[:500]}"
@@ -337,6 +348,8 @@ def main(argv=None):
     summary = f"# Notulen Rapat: {stem}\n\n" + "\n".join(meta) + "\n\n" + body + "\n"
     path = out_dir / f"{stem}.summary.md"
     path.write_text(summary, encoding="utf-8")
+    if TOKENS:
+        log(f"Tokens: {TOKENS['in']} in, {TOKENS['out']} out")
     log(f"Summary: {path} ({clock(time.time() - started)})")
 
 
